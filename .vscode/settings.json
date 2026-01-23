@@ -1,0 +1,4 @@
+{
+  "vscode-postgres.defaultConnection": "localhost",
+  "vscode-postgres.defaultDatabase": "PCRE"
+}
