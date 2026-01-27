@@ -1,0 +1,6 @@
+@PCRE.API_HostAddress = http://localhost:5161
+
+GET {{PCRE.API_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###

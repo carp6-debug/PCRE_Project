@@ -1,0 +1,16 @@
+D:\Documents\Projects\PCRE_Project\dotnet\PCRE.Data\obj\Debug\net9.0\PCRE.Data.csproj.AssemblyReference.cache
+D:\Documents\Projects\PCRE_Project\dotnet\PCRE.Data\obj\Debug\net9.0\PCRE.Data.GeneratedMSBuildEditorConfig.editorconfig
+D:\Documents\Projects\PCRE_Project\dotnet\PCRE.Data\obj\Debug\net9.0\PCRE.Data.AssemblyInfoInputs.cache
+D:\Documents\Projects\PCRE_Project\dotnet\PCRE.Data\obj\Debug\net9.0\PCRE.Data.AssemblyInfo.cs
+D:\Documents\Projects\PCRE_Project\dotnet\PCRE.Data\obj\Debug\net9.0\PCRE.Data.csproj.CoreCompileInputs.cache
+D:\Documents\Projects\PCRE_Project\dotnet\PCRE.Data\obj\Debug\net9.0\PCRE.Data.sourcelink.json
+D:\Documents\Projects\PCRE_Project\dotnet\PCRE.Data\bin\Debug\net9.0\PCRE.Data.deps.json
+D:\Documents\Projects\PCRE_Project\dotnet\PCRE.Data\bin\Debug\net9.0\PCRE.Data.dll
+D:\Documents\Projects\PCRE_Project\dotnet\PCRE.Data\bin\Debug\net9.0\PCRE.Data.pdb
+D:\Documents\Projects\PCRE_Project\dotnet\PCRE.Data\bin\Debug\net9.0\PCRE.Models.dll
+D:\Documents\Projects\PCRE_Project\dotnet\PCRE.Data\bin\Debug\net9.0\PCRE.Models.pdb
+D:\Documents\Projects\PCRE_Project\dotnet\PCRE.Data\obj\Debug\net9.0\PCRE.Data.csproj.Up2Date
+D:\Documents\Projects\PCRE_Project\dotnet\PCRE.Data\obj\Debug\net9.0\PCRE.Data.dll
+D:\Documents\Projects\PCRE_Project\dotnet\PCRE.Data\obj\Debug\net9.0\refint\PCRE.Data.dll
+D:\Documents\Projects\PCRE_Project\dotnet\PCRE.Data\obj\Debug\net9.0\PCRE.Data.pdb
+D:\Documents\Projects\PCRE_Project\dotnet\PCRE.Data\obj\Debug\net9.0\ref\PCRE.Data.dll

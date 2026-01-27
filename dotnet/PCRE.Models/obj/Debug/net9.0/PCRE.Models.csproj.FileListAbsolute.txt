@@ -1,0 +1,12 @@
+D:\Documents\Projects\PCRE_Project\dotnet\PCRE.Models\bin\Debug\net9.0\PCRE.Models.deps.json
+D:\Documents\Projects\PCRE_Project\dotnet\PCRE.Models\bin\Debug\net9.0\PCRE.Models.dll
+D:\Documents\Projects\PCRE_Project\dotnet\PCRE.Models\bin\Debug\net9.0\PCRE.Models.pdb
+D:\Documents\Projects\PCRE_Project\dotnet\PCRE.Models\obj\Debug\net9.0\PCRE.Models.GeneratedMSBuildEditorConfig.editorconfig
+D:\Documents\Projects\PCRE_Project\dotnet\PCRE.Models\obj\Debug\net9.0\PCRE.Models.AssemblyInfoInputs.cache
+D:\Documents\Projects\PCRE_Project\dotnet\PCRE.Models\obj\Debug\net9.0\PCRE.Models.AssemblyInfo.cs
+D:\Documents\Projects\PCRE_Project\dotnet\PCRE.Models\obj\Debug\net9.0\PCRE.Models.csproj.CoreCompileInputs.cache
+D:\Documents\Projects\PCRE_Project\dotnet\PCRE.Models\obj\Debug\net9.0\PCRE.Models.sourcelink.json
+D:\Documents\Projects\PCRE_Project\dotnet\PCRE.Models\obj\Debug\net9.0\PCRE.Models.dll
+D:\Documents\Projects\PCRE_Project\dotnet\PCRE.Models\obj\Debug\net9.0\refint\PCRE.Models.dll
+D:\Documents\Projects\PCRE_Project\dotnet\PCRE.Models\obj\Debug\net9.0\PCRE.Models.pdb
+D:\Documents\Projects\PCRE_Project\dotnet\PCRE.Models\obj\Debug\net9.0\ref\PCRE.Models.dll
