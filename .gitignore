@@ -1,0 +1,11 @@
+# Source Control Ignore for .NET
+[obj]/
+[bin]/
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+
+# VS Code specific
+.vscode/
+.history/

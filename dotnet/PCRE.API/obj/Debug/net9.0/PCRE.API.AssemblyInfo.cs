@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("PCRE.API")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+b9cf60a90210562ceb7d544636d96e7cdba0b6e9")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+80a39f5c74c0b660aad776d61fa034e4eee0399b")]
 [assembly: System.Reflection.AssemblyProductAttribute("PCRE.API")]
 [assembly: System.Reflection.AssemblyTitleAttribute("PCRE.API")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
