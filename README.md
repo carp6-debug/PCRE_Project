@@ -114,15 +114,15 @@ By demonstrating core competencies across **five distinct industry roles**, the 
 
 ### 🌉 The Programmer Analyst (The "Bridge")
 
-* **The Story:** "I orchestrated the full-cycle technical narrative, bridging the gap between high-fidelity PostgreSQL persistence and end-user consumption. By developing a .NET 8 Web Service alongside the Python visualization layer, I transformed raw telemetry into a production-ready diagnostic suite."
+* **The Story:** "I orchestrated the full-cycle technical narrative, bridging the gap between high-fidelity PostgreSQL persistence and end-user consumption. By developing a .NET 9 Web Service alongside the Python visualization layer, I transformed raw telemetry into a production-ready diagnostic suite."
 
 * **Action:** Harmonized the end-to-end workflow from SQL ingestion to complex Matplotlib/Seaborn visualization. Engineered a RESTful API using the Repository Pattern to expose "Health Signatures" for real-time monitoring.
 
-* **Focus:** Full-Cycle Workflow Optimization and Technical Storytelling.
+* **Focus:** Full-Cycle Workflow Optimization and Technical Storytelling. Engineered a RESTful API using the Repository Pattern and Dapper to map PostgreSQL signal telemetry to JSON Health Signatures for real-time monitoring.
 
 ## 🏗️ Systems Analyst "Battle Stories"
 
-**Roadblock: The Array Bottleneck** `UNNEST` was insufficient for "dirty" arrays containing `None` values. I engineered an **Atomic Fetcher** using Python-side `clean_mean` logic """ to sanitize telemetry before aggregation.
+**Roadblock: The Array Bottleneck** `UNNEST` was insufficient for "dirty" arrays containing `None` values. I engineered an **Atomic Fetcher** using Python-side `clean_mean` logic to sanitize telemetry before aggregation.
 
 **Roadblock: The Stability Wall** Linear Regression originally failed on stable assets. I implemented **Adaptive Rolling Windows** (5–50 cycles) to visualize the "Velocity of Change" even in healthy units.
 
@@ -147,7 +147,7 @@ During development, AI was utilized as an **Architecture Consultant** and **Pair
 
 ### 🛰️ The Atomic Fetcher
 
-To process 5GB of raw telemetry within a strict 8.00 GB RAM footprint, this project utilizes a custom "Atomic Fetcher". This is a dynamic, smart operation designed to traverse and navigate the non-linear, inconsistent hierarchy of the original MATLAB file structures.
+To process 5GB of raw telemetry within a strict 8.00 GB RAM footprint, this project utilizes a custom "Atomic Fetcher" logic within the Analytical Framework to navigate non-linear MATLAB structures via the PostgreSQL Silver Layer. This is a dynamic, smart operation designed to traverse and navigate the non-linear, inconsistent hierarchy of the original MATLAB file structures.
 
 **The "One-at-a-Time" Approach**
 The fetcher operates **atomically** regarding memory—meaning it treats each data request as a self-contained, isolated operation.
@@ -158,36 +158,55 @@ The fetcher operates **atomically** regarding memory—meaning it treats each da
 
 ```
 # Atomic Fetcher: Navigates non-linear structs and manages memory
-def get_capacitor_data(cap_id):
-
+def get_capacitor_data(cap_id, limit=None):
+    """Refined Atomic fetcher: Cleans NoneTypes within arrays to prevent TypeErrors."""
+    limit_clause = f"LIMIT {limit}" if limit else ""
+    
+    query = f"""
+    SELECT serial_date, v_out
+    FROM prognostics.transient_readings 
+    WHERE cap_id = {cap_id} 
+    ORDER BY serial_date ASC 
+    {limit_clause}
     """
-    Performs a self-contained data pull to maintain memory integrity.
-    Navigates the hierarchy and cleans the signal in a single pass.
-    """
+    
     with atomic_engine.connect() as conn:
         df = pd.read_sql(text(query), conn)
     
-    # Surgical sanitation of NoneType artifacts found in raw signals
-    def clean_mean(arr):
-        if arr is None: return np.nan
-        clean_arr = [v for v in arr if v is not None]
-        return np.mean(clean_arr) if clean_arr else np.nan
+    if not df.empty:
+        df['human_date'] = df['serial_date'].apply(matlab_to_datetime)
+        
+        # --- ROBUST AGGREGATION ---
+        # 1. Filter out None values from inside the list
+        # 2. Calculate mean only on the numeric remains
+        def clean_mean(arr):
+            if arr is None: return np.nan
+            # List comprehension to keep only floats/ints
+            clean_arr = [v for v in arr if v is not None]
+            return np.mean(clean_arr) if clean_arr else np.nan
 
-    df['avg_voltage_out'] = df['v_out'].apply(clean_mean)
-    
-    # Explicitly clear high-memory arrays once the feature is extracted
-    return df.drop(columns=['v_out'])
+        df['avg_voltage_out'] = df['v_out'].apply(clean_mean)
+        df['cycle_index'] = range(len(df))
+        
+        # Drop raw array to keep memory low
+        df = df.drop(columns=['v_out'])
+        
+    return df
 
 ```
-### 🛡️ Atomic Fetcher SQL Verification Layer
+## 🛡️ Atomic Fetcher SQL Verification Layer
 
-The following queries, located in 03_audits.sql and 04_utilities.sql, provide the "Ground Truth" verification for the 5-role mission, ensuring the high-fidelity integrity of the data platform:
+The following queries, located in 03_audits.sql and 04_utilities.sql, provide the "Ground Truth" verification for the 5-role mission. ensuring the high-fidelity integrity of the data platform. The .NET webservice development for three (3) PCRE.API http endpoints are verified with OpenAPI Scalar:
 
 | Role | Verification Objective | SQL Proof of Work |
 | :--- | :--- | :--- |
 | **Data Engineer** | Signal DNA Check | `SELECT v_out[1:5] FROM transient_readings` |
 | **Programmer Analyst** | Ingestion Performance | `EXPLAIN ANALYZE SELECT serial_date, v_out` |
-| **Business Analyst** | Risk Quantification | `SELECT test_voltage_v, pg_size_pretty(SUM(...))` |
+|                        | API Payload Mapping   | `SELECT pg_typeof(v_out), count(*) FROM ...` |
+|                        | First 100 cycles      | `GET /api/Capacitor/{id}` |
+|                        | Degraded cycles       | `GET /api/Capacitor/{id}/alerts` |
+|                        | Health Index 0 to 1.0 | `GET /api/Capacitor/{id}/status` |
+| **Business Analyst**   | Risk Quantification   | `SELECT test_voltage_v, pg_size_pretty(SUM(...))` |
 
 ## 🗄️ Database Lifecycle (Medallion Architecture)
 
@@ -207,6 +226,46 @@ The project utilizes a Medallion Architecture to transform raw data into a progn
 
 * **🟦 Gold Layer**: Feature Arrays. Health Signatures optimized for Predictive Modeling.
   
+## 🌐 .NET Enterprise Backend Integration
+
+To transition the project from a research environment to a production-ready software suite, the **Silver Layer** is exposed via a **.NET 9 REST API.** This service acts as a "Smart Pipe," providing filtered, pre-normalized telemetry that offloads basic arithmetic from the Python layer, allowing it to focus on complex statistical forecasting.
+
+**Technical Implementation:**
+
+* **Architecture:** Decoupled N-Tier architecture consisting of `PCRE.API` (Controllers), `PCRE.Data` (Repositories), and `PCRE.Models` (DTOs).
+* **Data Access:** High-performance mapping utilizing **Dapper** and the **Repository Pattern** to ensure contract stability.
+* **Interoperability:** Enables external consumption by Power BI, React dashboards, or mobile diagnostic tools via standard JSON.
+* **The "JSON Bridge":** Engineered custom mapping to convert complex PostgreSQL numeric arrays into strongly-typed C# `List<double>` objects, resolving hardware-to-software data mismatches.
+  
+## 🚦 Endpoint Strategy & Scalar Verification
+
+The following endpoints were engineered to facilitate the six prognostic plots while providing real-time fleet monitoring:
+
+| Endpoint | Logic Type | Visualization Support |
+| :--- | :--- | :--- |
+| `GET /api/Capacitor/{id}` | **Atomic Ingestion** | Provides high-resolution vector data for **Plots 1 & 2** (Pulse Anatomy). |
+| `GET /api/Capacitor/{id}/alerts` | **Edge Analysis** | Uses server-side SQL `unnest` and `AVG` to isolate degraded cycles for **Plots 3 & 4**. |
+| `GET /api/Capacitor/{id}/status` | **Smart Metadata** | Normalizes voltage into a Health Index (0.0-1.0) and categorical status for **Plot 5**. |
+
+
+JSON
+
+```
+[
+  {
+    "readingId": 1,
+    "serialDate": 735920.5499652778,
+    "vLoad": "[0.1264, 1.7260, 1.6814, ...[400 samples]]",
+    "vOut": "[0.1087, 1.9517, 2.2960, ...[400 samples]]",
+    "humanDate": "2014-11-17T13:11:57",
+    "avgVoltage": 4.700986015027598,
+    "healthIndex": 0.97937,
+    "status": "Nominal"
+  }
+]
+
+```
+
 ## 🏛️ Analytical Framework
 
 The analysis is divided into two distinct phases to ensure data validation and comparative insights:
@@ -277,7 +336,24 @@ pip install \
 ```text
 PCRE_PROJECT/
 ├── .vscode/                 # Editor configurations
-├── dotnet/                  # [.NET Web Service - Sub-module]
+├── dotnet/                  # [.NET 9 Web Service - Sub-module]
+│   ├── PCRE.API/            # REST Controllers & OpenAPI (Scalar)
+│   │   ├── bin/
+│   │   ├── Controllers/     # API Endpoints
+│   │   ├── obj/
+│   │   ├── Properties/
+│   │   ├── appsettings.json
+│   │   ├── PCRE.API.csproj
+│   │   └── Program.cs       # Service Entry Point
+│   ├── PCRE.Data/           # Dapper Repositories & SQL Mapping
+│   │   ├── bin/
+│   │   ├── IDbConnectionFactory.cs
+│   │   ├── IPrognosticsRepository.cs
+│   │   ├── NpgsqlConnectionFactory.cs
+│   │   └── PrognosticsRepository.cs # Core SQL Logic
+│   ├── PCRE.Models/         # TransientReading.cs & DTOs
+│   │   └── TransientReading.cs # High-Fidelity Data Model
+│   └── PCRE_Service.sln     # Visual Studio Solution File
 ├── images/                  # Prognostic Visualization Suite
 │   ├── Plot1_Baseline.png
 │   ├── Plot2_SignalFidelity.png
@@ -295,8 +371,9 @@ PCRE_PROJECT/
 │   ├── 02_seed_metadata.sql # Cohort Setup
 │   ├── 03_audits.sql        # Data Verification
 │   └── 04_utilities.sql     # Maintenance Tools
+├── .gitignore               # Excludes build artifacts
 ├── README.md                # Project documentation
-└── requirements.txt         # Environment dependencies
+└── requirements.txt         # Python environment dependencies
 ```
 
 ### 📂 Project Verification Scripts
@@ -308,6 +385,8 @@ The following scripts facilitate the conversion from raw telemetry to relational
 * 📜 **[04_utilities.sql](./sql/04_utilities.sql)**: Operational tools and performance tuning.
 * 💻 **[db_utils.py](/python/scripts/db_utils.py)**: The Atomic Fetcher ingestion driver.
 * 📓 **[analysis.ipynb](/python/scripts/health_degradation_analysis.ipynb)**: Phase I-III prognostic modeling.
+* 🌐 **[PCRE.API](/dotnet/PCRE.API/)**: RESTful endpoint provider for Health Signatures.
+* 🏗️ **[PCRE.Data](/dotnet/PCRE.Data/)**: Repository Layer implements the bridge between PostgreSQL and the .NET runtime.
 
 ## 📊 Experimental Results & Narrative Analysis
 
@@ -366,28 +445,39 @@ The following scripts facilitate the conversion from raw telemetry to relational
 ![alt text](</images/Plot6_RULForecast.png>)
 
 
-## 🚀 How to Replicate this Mission<a id="setup"></a>
+# 🚀 How to Replicate this Mission
 
 ### 1. Infrastructure Setup
 
-Initialize the PostgreSQL environment using the hardened scripts in the /scripts directory:
+Initialize the PostgreSQL 16 environment using the hardened scripts in the `/sql` directory:
 
-    1. Run 01_schema.sql to build the Information Architecture.
+1. Run `01_schema.sql` to build the Information Architecture.
 
-    2. Run 02_seed_metadata.sql to establish the experimental context.
+2. Run `02_seed_metadata.sql` to establish the experimental context.
 
-### 2. Data Ingestion
 
-Execute the ingestion engine to transform the raw .mat telemetry into the Silver Layer:
+### 2. .NET API Gateway (Backend)
 
+Ensure you have the **.NET 9 SDK** installed:
+
+1. Navigate to the `dotnet/PCRE.API` directory.
+
+2. Restore dependencies and launch the service:
+
+```
 Bash
 
-    1. Note: db_utils.py python script utilizes the **Atomic Fetcher** logic to manage memory and clean artifacts.
+# Restore project dependencies
+dotnet restore
 
-    2. python db_utils.py
+# Launch the .NET Web API
+dotnet run
+```
 
-### 3. Verification & Analysis
+3. **Interactive Documentation:** Navigate to `http://localhost:5161/scalar/v1` to explore the **OpenAPI/Scalar** interface and test the `/status` and `/alerts` endpoints.
 
-    1. **Audit:** Run 03_audits.sql to perform the "DNA Fingerprint" verification of the signal vectors.
-
-    2. **Analyze:** Open health_degradation_analysis.ipynb to generate the Phase I–III plots.
+### 3. Data Ingestion & Analysis (Python)
+    
+1. **Step 1:Ingest:** — Run `python_scripts/db_utils.py` to perform the one-time migration of raw `.mat` telementary to the PostgreSQL Silver Layer.
+   
+2. **Step 2:Analyze:** — Open health_degradation_analysis.ipynb. The embedded get_capacitor_data() helper serves as the Atomic Fetcher, utilizing a clean_mean() function to sanitize high-frequency signal vectors in real-time.
