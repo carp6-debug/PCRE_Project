@@ -147,53 +147,34 @@ During development, AI was utilized as an **Architecture Consultant** and **Pair
 
 ## 🛠️ Technical Highlight:
 
-### 🛰️ The Atomic Fetcher
+### 🛰️ The Atomic Fetcher (Medallion Ingestion)<a id="atomic-fetcher"></a>
 
-To process 5GB of raw telemetry within a strict 8.00 GB RAM footprint, this project utilizes a custom "Atomic Fetcher" logic within the Analytical Framework to navigate non-linear MATLAB structures via the PostgreSQL Silver Layer. This is a dynamic, smart operation designed to traverse and navigate the non-linear, inconsistent hierarchy of the original MATLAB file structures.
+To process 5GB of raw telemetry within a strict 8.00 GB RAM footprint, this project utilizes a custom **"Atomic Fetcher"** logic. This module acts as a "Smart Vehicle," navigating nested MATLAB structs to extract 400-point signal vectors while managing memory through explicit gating (.copy() and del).
 
-**The "One-at-a-Time" Approach**
-The fetcher operates **atomically** regarding memory—meaning it treats each data request as a self-contained, isolated operation.
-
-**Execution:** By using .copy() to prevent pointer reuse and del to explicitly clear DataFrames, the fetcher ensures memory is fully released before the next "atom" of data is processed.
-
-**Purpose:** This prevents the **"Memory Bloat"** that typically occurs when processing high-frequency signal vectors in a standard loop.
+**The "One-at-a-Time" Approach** The fetcher operates **atomically** regarding memory—treating each data request as a self-contained, isolated operation to prevent pointer reuse and memory leak.
 
 ```
-# Atomic Fetcher: Navigates non-linear structs and manages memory
-def get_capacitor_data(cap_id, limit=None):
-    """Refined Atomic fetcher: Cleans NoneTypes within arrays to prevent TypeErrors."""
-    limit_clause = f"LIMIT {limit}" if limit else ""
+# Atomic Ingestion logic from db_utils.py
+for i in range(1, 9):
+    cap_name = f"{group_name}C{i}"
     
-    query = f"""
-    SELECT serial_date, v_out
-    FROM prognostics.transient_readings 
-    WHERE cap_id = {cap_id} 
-    ORDER BY serial_date ASC 
-    {limit_clause}
-    """
-    
-    with atomic_engine.connect() as conn:
-        df = pd.read_sql(text(query), conn)
-    
-    if not df.empty:
-        df['human_date'] = df['serial_date'].apply(matlab_to_datetime)
-        
-        # --- ROBUST AGGREGATION ---
-        # 1. Filter out None values from inside the list
-        # 2. Calculate mean only on the numeric remains
-        def clean_mean(arr):
-            if arr is None: return np.nan
-            # List comprehension to keep only floats/ints
-            clean_arr = [v for v in arr if v is not None]
-            return np.mean(clean_arr) if clean_arr else np.nan
+    # FORCE NEW MEMORY OBJECTS: .copy() prevents pointer reuse
+    # This ensures the 5GB raw file doesn't saturate the 8GB RAM 
+    v_load_raw = np.array(f[f"{base_path}/{cap_name}/VL"]).copy()
+    v_out_raw = np.array(f[f"{base_path}/{cap_name}/VO"]).copy()
 
-        df['avg_voltage_out'] = df['v_out'].apply(clean_mean)
-        df['cycle_index'] = range(len(df))
-        
-        # Drop raw array to keep memory low
-        df = df.drop(columns=['v_out'])
-        
-    return df
+    # Orientation & Surgical Alignment Logic
+    min_len = min(len(master_timestamps), v_load_raw.shape[0])
+    
+    # Create DataFrame and immediately write to SQL (Silver Layer)
+    df = pd.DataFrame({ 
+        'cap_id': [int(cap_id)] * min_len, 
+        'v_out': [[float(x) for x in row] for row in v_out_raw]
+    })
+    
+    df.to_sql('transient_readings', engine, schema='prognostics', method='multi', chunksize=250)
+    
+    del df # Explicitly release memory before the next "atom" of data is processed
 
 ```
 ## 🛡️ Atomic Fetcher SQL Verification Layer
@@ -288,7 +269,7 @@ Focus: Feature Extraction (Plot #3) and Longitudinal Health Decay (Plot #4) to i
 
 | Cell # | Content Type (Navigation) | Objective |
 | :--- | :--- | :--- |
-| **3** | [**Infrastructure & Setup**](#setup) | Database Connection & Helper Functions |
+| **3** | [**The Atomic Fetcher Framework**](#atomic-fetcher) | Memory-Gated Ingestion & Signal Extraction |
 | **4** | [**Plot #1: Multi-Voltage Baseline**](#plot1) | Part I: Data Forensic & Signal Validation |
 | **5** | [**Plot #2: Pulse Anatomy**](#plot2) | Part I: High-Resolution Signal Fidelity |
 | **6** | [**Plot #3: Peak Stability**](#plot3) | Part II: Longitudinal Feature Extraction |
@@ -482,4 +463,4 @@ dotnet run
     
 1. **Step 1:Ingest:** — Run `python_scripts/db_utils.py` to perform the one-time migration of raw `.mat` telementary to the PostgreSQL Silver Layer.
    
-2. **Step 2:Analyze:** — Open health_degradation_analysis.ipynb. The embedded get_capacitor_data() helper serves as the Atomic Fetcher, utilizing a clean_mean() function to sanitize high-frequency signal vectors in real-time.
+2. **Step 2:Analyze:** — `Open health_degradation_analysis.ipynb`. The embedded get_capacitor_data() helper serves as the Atomic Fetcher, utilizing a clean_mean() function to sanitize high-frequency signal vectors in real-time.
