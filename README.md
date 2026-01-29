@@ -267,15 +267,15 @@ Focus: Feature Extraction (Plot #3) and Longitudinal Health Decay (Plot #4) to i
 
 ### 🗺️ Notebook Architecture & Signal Lifecycle Roadmap
 
-| Cell # | Content Type (Navigation) | Objective |
+| Plot # | Content Type (Navigation) | Objective |
 | :--- | :--- | :--- |
-| **3** | [**The Atomic Fetcher Framework**](#atomic-fetcher) | Memory-Gated Ingestion & Signal Extraction |
-| **4** | [**Plot #1: Multi-Voltage Baseline**](#plot1) | Part I: Data Forensic & Signal Validation |
-| **5** | [**Plot #2: Pulse Anatomy**](#plot2) | Part I: High-Resolution Signal Fidelity |
-| **6** | [**Plot #3: Peak Stability**](#plot3) | Part II: Longitudinal Feature Extraction |
-| **7** | [**Plot #4: Health Decay Overlay**](#plot4) | Part II: 1000-Cycle Stress Analysis |
-| **8** | [**Plot #5: Failure Distribution**](#plot5) | Part II: Statistical Fleet Variance |
-| **9** | [**Plot #6: RUL Forecast**](#plot6) | Part II: Predictive Prognostics |
+| **0** | [**The Atomic Fetcher Framework**](#atomic-fetcher) | Memory-Gated Ingestion & Signal Extraction |
+| **1** | [**Plot #1: Multi-Voltage Baseline**](#plot1) | Part I: Data Forensic & Signal Validation |
+| **2** | [**Plot #2: Pulse Anatomy**](#plot2) | Part I: High-Resolution Signal Fidelity |
+| **3** | [**Plot #3: Peak Stability**](#plot3) | Part II: Longitudinal Feature Extraction |
+| **4** | [**Plot #4: Health Decay Overlay**](#plot4) | Part II: 1000-Cycle Stress Analysis |
+| **5** | [**Plot #5: Failure Distribution**](#plot5) | Part II: Statistical Fleet Variance |
+| **6** | [**Plot #6: RUL Forecast**](#plot6) | Part II: Predictive Prognostics |
 
 ### 📉 PHM Analytic Framework: From Forensic Signals to Prognostic Forecasts
 
