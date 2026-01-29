@@ -370,6 +370,7 @@ The following scripts facilitate the conversion from raw telemetry to relational
 * 📓 **[analysis.ipynb](/python/scripts/health_degradation_analysis.ipynb)**: Phase I-III prognostic modeling.
 * 🌐 **[PCRE.API](/dotnet/PCRE.API/)**: RESTful endpoint provider for Health Signatures.
 * 🏗️ **[PCRE.Data](/dotnet/PCRE.Data/)**: Repository Layer implements the bridge between PostgreSQL and the .NET runtime.
+* 📦 **[PCRE.Models](/dotnet//PCRE.Models/)**: Centralized Domain Models and DTOs defining the project's data contracts. 
 
 ## 📊 Experimental Results & Narrative Analysis
 
