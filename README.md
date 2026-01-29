@@ -57,6 +57,8 @@ Utilizing Prognostic Health Management (PHM) analysis of current health telemetr
 
 This project uses the publicly available NASA Prognostics Data Repository. A collection of data sets focused exclusively on prognostic time-series data from a prior nominal state to a failed state.
 
+**The PCRE framework serves as a Digital Twin** (the final high-fidelity software representation of the physical hardware used to evaluate prognostic health). By mapping raw electrical telemetry into a structured .NET/PostgreSQL environment, the system creates a virtual surrogate that tracks real-time health and forecasts Remaining Useful Life (RUL) without further physical intervention.
+
 ### NASA Prognostics Data Set 12. Capacitor Electrical Stress
 
 **Experiment**
@@ -228,7 +230,7 @@ The project utilizes a Medallion Architecture to transform raw data into a progn
   
 ## 🌐 .NET Enterprise Backend Integration
 
-To transition the project from a research environment to a production-ready software suite, the **Silver Layer** is exposed via a **.NET 9 REST API.** This service acts as a "Smart Pipe," providing filtered, pre-normalized telemetry that offloads basic arithmetic from the Python layer, allowing it to focus on complex statistical forecasting.
+To transition the project from a research environment to a production-ready software suite, the Silver Layer is exposed via a .NET 9 REST API. This architecture establishes the .NET Web Service and the Python Analytical Notebook as 'sibling' consumers of the same relational PostgreSQL data. This dual-consumption model proves the platform's interoperability, allowing the backend to manage data governance while the Python layer focuses on scientific research.
 
 **Technical Implementation:**
 
